@@ -1,5 +1,6 @@
 from flask_appbuilder.security.manager import AUTH_OID
 from flask_appbuilder.security.sqla.manager import SecurityManager
+from flask_appbuilder.security.sqla.models import Permission
 from flask_oidc import OpenIDConnect
 from .views import AuthOIDCView
 from logging import getLogger
@@ -16,6 +17,7 @@ class OIDCSecurityManagerMixin:
 
 
 class OIDCSecurityManager(OIDCSecurityManagerMixin, SecurityManager):
+    permission_model = Permission
     pass
 
 

@@ -2,12 +2,11 @@ import os
 from typing import List
 from urllib.parse import quote
 
-from authlib.integrations.flask_client import OAuth
-from flask import redirect, request, session, g, url_for, flash
+from flask import redirect, request, session, g, flash
 from flask_admin import expose
 from flask_appbuilder._compat import as_unicode
 from flask_appbuilder.security.forms import LoginForm_oid
-from flask_appbuilder.security.views import AuthView
+from flask_appbuilder.security.views import AuthOIDView
 from flask_appbuilder.utils.base import get_safe_redirect
 from flask_login import login_user
 from werkzeug.wrappers import Response as WerkzeugResponse
@@ -18,7 +17,7 @@ FIRST_NAME_OIDC_FIELD = os.getenv("FIRST_NAME_OIDC_FIELD", default="nickname")
 LAST_NAME_OIDC_FIELD = os.getenv("LAST_NAME_OIDC_FIELD", default="name")
 
 
-class AuthOIDCView(AuthView):
+class AuthOIDCView(AuthOIDView):
     login_template = "appbuilder/general/security/login_oid.html"
     oid_ask_for = ["email"]
     oid_ask_for_optional: List[str] = []

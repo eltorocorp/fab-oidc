@@ -34,6 +34,7 @@ class OIDCSecurityManagerMixin:
 
 
 class OIDCSecurityManager(OIDCSecurityManagerMixin, SecurityManager):
+    permission_model = Permission
     pass
 
 

@@ -4,7 +4,6 @@ from werkzeug.contrib.cache import BaseCache
 
 
 class WerkzeugCacheBackedCredentialStore(UserDict):
-
     def __init__(self, cache):
         self.cache = cache  # type: BaseCache
 
@@ -18,4 +17,4 @@ class WerkzeugCacheBackedCredentialStore(UserDict):
         return self.cache.has(key)
 
     def __repr__(self):
-        return 'WerkzeugCache: {}'.format(str(self.cache.__class__))
+        return "WerkzeugCache: {}".format(str(self.cache.__class__))

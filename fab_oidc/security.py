@@ -1,18 +1,35 @@
+import os
+
+from logging import getLogger
+
 from flask_appbuilder.security.manager import AUTH_OID
 from flask_appbuilder.security.sqla.manager import SecurityManager
-from flask_appbuilder.security.sqla.models import Permission
-from flask_oidc import OpenIDConnect
+from authlib.integrations.flask_client import OAuth
+
 from .views import AuthOIDCView
-from logging import getLogger
 
 log = getLogger(__name__)
 
+issuer = os.getenv('ISSUER', '')
+clientId = os.getenv('CLIENT_ID', '')
+clientSecret = os.getenv('CLIENT_SECRET', '')
+oidcDiscoveryUrl = f'{issuer}/.well-known/openid-configuration'
 
 class OIDCSecurityManagerMixin:
     def __init__(self, appbuilder):
         super().__init__(appbuilder)
         if self.auth_type == AUTH_OID:
-            self.oid = OpenIDConnect(self.appbuilder.get_app)
+            self.oid = OAuth(self.appbuilder.get_app)
+            self.oid.register(
+                name='keycloak',
+                client_id=clientId,
+                client_secret=clientSecret,
+                server_metadata_url=oidcDiscoveryUrl,
+                client_kwargs={
+                    'scope': 'openid email profile',
+                    'code_challenge_method': 'S256'
+                },
+            )
             self.authoidview = AuthOIDCView
 
 
@@ -24,6 +41,7 @@ class OIDCSecurityManager(OIDCSecurityManagerMixin, SecurityManager):
 try:
     from airflow.www.security import AirflowSecurityManager
 
+
     class AirflowOIDCSecurityManager(OIDCSecurityManagerMixin, AirflowSecurityManager):
         pass
 
@@ -33,6 +51,7 @@ except ImportError:
 
     try:
         from airflow.www_rbac.security import AirflowSecurityManager
+
 
         class AirflowOIDCSecurityManager(
             OIDCSecurityManagerMixin, AirflowSecurityManager
@@ -44,6 +63,7 @@ except ImportError:
 
 try:
     from superset.security import SupersetSecurityManager
+
 
     class SupersetOIDCSecurityManager(
         OIDCSecurityManagerMixin, SupersetSecurityManager

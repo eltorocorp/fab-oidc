@@ -1,10 +1,9 @@
 import os
-
 from logging import getLogger
 
+from authlib.integrations.flask_client import OAuth
 from flask_appbuilder.security.manager import AUTH_OID
 from flask_appbuilder.security.sqla.manager import SecurityManager
-from authlib.integrations.flask_client import OAuth
 
 from .views import AuthOIDCView
 
@@ -14,6 +13,7 @@ issuer = os.getenv('ISSUER', '')
 clientId = os.getenv('CLIENT_ID', '')
 clientSecret = os.getenv('CLIENT_SECRET', '')
 oidcDiscoveryUrl = f'{issuer}/.well-known/openid-configuration'
+
 
 class OIDCSecurityManagerMixin:
     def __init__(self, appbuilder):

@@ -9,10 +9,10 @@ from .views import AuthOIDCView
 
 log = getLogger(__name__)
 
-issuer = os.getenv('ISSUER', '')
-clientId = os.getenv('CLIENT_ID', '')
-clientSecret = os.getenv('CLIENT_SECRET', '')
-oidcDiscoveryUrl = f'{issuer}/.well-known/openid-configuration'
+issuer = os.getenv("ISSUER", "")
+clientId = os.getenv("CLIENT_ID", "")
+clientSecret = os.getenv("CLIENT_SECRET", "")
+oidcDiscoveryUrl = f"{issuer}/.well-known/openid-configuration"
 
 
 class OIDCSecurityManagerMixin:
@@ -21,13 +21,13 @@ class OIDCSecurityManagerMixin:
         if self.auth_type == AUTH_OID:
             self.oid = OAuth(self.appbuilder.get_app)
             self.oid.register(
-                name='keycloak',
+                name="keycloak",
                 client_id=clientId,
                 client_secret=clientSecret,
                 server_metadata_url=oidcDiscoveryUrl,
                 client_kwargs={
-                    'scope': 'openid email profile',
-                    'code_challenge_method': 'S256'
+                    "scope": "openid email profile",
+                    "code_challenge_method": "S256",
                 },
             )
             self.authoidview = AuthOIDCView
@@ -40,17 +40,14 @@ class OIDCSecurityManager(OIDCSecurityManagerMixin, SecurityManager):
 try:
     from airflow.www.security import AirflowSecurityManager
 
-
     class AirflowOIDCSecurityManager(OIDCSecurityManagerMixin, AirflowSecurityManager):
         pass
-
 
 except ImportError:
     log.debug("Airflow 2 not installed")
 
     try:
         from airflow.www_rbac.security import AirflowSecurityManager
-
 
         class AirflowOIDCSecurityManager(
             OIDCSecurityManagerMixin, AirflowSecurityManager
@@ -63,12 +60,10 @@ except ImportError:
 try:
     from superset.security import SupersetSecurityManager
 
-
     class SupersetOIDCSecurityManager(
         OIDCSecurityManagerMixin, SupersetSecurityManager
     ):
         pass
-
 
 except ImportError:
     log.debug("Superset not installed")
